@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marvel JF — Portfolio</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #ffffff;
+      color: #1a1a1a;
+    }
+
+    /* ===== NAVBAR ===== */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 60px;
+      background: #dbeafe;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      z-index: 100;
+      border-bottom: 1px solid #bfdbfe;
+    }
+
+    .logo {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1e40af;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 0.5rem;
+      list-style: none;
+    }
+
+    .nav-links button {
+      background: none;
+      border: none;
+      padding: 0.4rem 1rem;
+      font-size: 0.9rem;
+      font-family: inherit;
+      color: #1e3a8a;
+      cursor: pointer;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: background 0.15s;
+    }
+
+    .nav-links button:hover {
+      background: #bfdbfe;
+    }
+
+    .nav-links button.active {
+      background: #1e40af;
+      color: #ffffff;
+    }
+
+    /* ===== PAGES ===== */
+    .page { display: none; padding: 80px 2rem 3rem; max-width: 960px; margin: 0 auto; }
+    .page.active { display: block; }
+
+    h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; color: #1a1a1a; }
+    h2 { font-size: 1.4rem; font-weight: 600; margin-bottom: 1rem; color: #1a1a1a; }
+    p  { color: #555; line-height: 1.7; }
+
+    .subtitle { color: #555; margin-bottom: 2rem; }
+
+    /* ===== ACCUEIL ===== */
+    .hero { padding: 2rem 0; }
+    .hero h1 { font-size: 2.2rem; margin-bottom: 0.6rem; }
+    .hero p   { max-width: 560px; margin-bottom: 2rem; }
+
+    .btn {
+      display: inline-block;
+      padding: 0.6rem 1.4rem;
+      border-radius: 6px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 2px solid #1e40af;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+
+    .btn-primary { background: #1e40af; color: #fff; }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-outline { background: transparent; color: #1e40af; margin-left: 0.75rem; }
+    .btn-outline:hover { background: #1e40af; color: #fff; }
+
+    .skills {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 2.5rem;
+    }
+
+    .skill-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 1.2rem;
+    }
+
+    .skill-card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.2rem; }
+    .skill-card span { font-size: 0.82rem; color: #1e40af; }
+
+    /* ===== GALERIE ===== */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .gallery-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      display: block;
+      background: #f1f5f9;
+    }
+
+    .gallery-caption {
+      padding: 0.8rem 1rem;
+    }
+
+    .gallery-caption h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.2rem; }
+    .gallery-caption p  { font-size: 0.82rem; color: #888; }
+
+    /* ===== SERVICES ===== */
+    .services-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .service-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 1.4rem;
+    }
+
+    .service-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem; }
+    .service-card p  { font-size: 0.87rem; }
+
+    /* ===== CONTACT ===== */
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 2.5rem;
+      align-items: start;
+    }
+
+    .info-block { border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; }
+    .info-block h2 { margin-bottom: 1.2rem; }
+
+    .info-row { margin-bottom: 1rem; }
+    .info-row label { display: block; font-size: 0.75rem; font-weight: 600; color: #1e40af; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.2rem; }
+    .info-row span  { font-size: 0.9rem; color: #333; }
+
+    .form-block { border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; }
+    .form-block h2 { margin-bottom: 1.2rem; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: 0.83rem; font-weight: 600; margin-bottom: 0.35rem; }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.6rem 0.85rem;
+      border: 1.5px solid #d1d5db;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      color: #1a1a1a;
+      background: #f9fafb;
+      outline: none;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: #1e40af; background: #fff; }
+    .form-group textarea { resize: vertical; min-height: 100px; }
+
+    .form-btn {
+      width: 100%;
+      padding: 0.65rem;
+      background: #1e40af;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.93rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+    }
+    .form-btn:hover { background: #1d4ed8; }
+
+    .success-msg {
+      display: none;
+      margin-top: 0.8rem;
+      padding: 0.8rem;
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      border-radius: 6px;
+      color: #166534;
+      font-size: 0.88rem;
+      text-align: center;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 640px) {
+      .contact-layout { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .nav-links button { padding: 0.4rem 0.6rem; font-size: 0.82rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <span class="logo" onclick="showPage('accueil')">Marvel JF</span>
+    <ul class="nav-links">
+      <li><button onclick="showPage('accueil')"  id="nav-accueil">Accueil</button></li>
+      <li><button onclick="showPage('galerie')"  id="nav-galerie">Galerie</button></li>
+      <li><button onclick="showPage('services')" id="nav-services">Services</button></li>
+      <li><button onclick="showPage('contact')"  id="nav-contact">Contact</button></li>
+    </ul>
+  </nav>
+
+  <!-- PAGE ACCUEIL -->
+  <div class="page active" id="page-accueil">
+    <div class="hero">
+      <h1>Jean François Marvel Enèce</h1>
+      <p class="subtitle">Graphiste freelance &amp; développeur web — Haïti</p>
+      <p>Je crée des identités visuelles, des sites web et des solutions numériques pour des clients en Haïti, aux États-Unis et au Chili.</p>
+      <div style="margin-top:1.5rem;">
+        <button class="btn btn-primary" onclick="showPage('galerie')">Voir mes projets</button>
+        <button class="btn btn-outline" onclick="showPage('contact')">Me contacter</button>
+      </div>
+    </div>
+
+    <div style="margin-top:2.5rem;">
+      <h2>Compétences</h2>
+      <div class="skills">
+        <div class="skill-card"><h3>Photoshop</h3><span>Très avancé</span></div>
+        <div class="skill-card"><h3>CorelDRAW</h3><span>Très avancé</span></div>
+        <div class="skill-card"><h3>WordPress</h3><span>Très avancé</span></div>
+        <div class="skill-card"><h3>HTML / CSS</h3><span>Intermédiaire</span></div>
+        <div class="skill-card"><h3>JavaScript</h3><span>Intermédiaire</span></div>
+        <div class="skill-card"><h3>FL Studio</h3><span>Avancé</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE GALERIE -->
+  <div class="page" id="page-galerie">
+    <h1>Galerie</h1>
+    <p class="subtitle">Quelques projets réalisés</p>
+    <div class="gallery-grid">
+      <div class="gallery-item">
+        <img src="1.png" alt="Projet 1" />
+        <div class="gallery-caption"><h3>Affiche événement</h3><p>Design graphique — Photoshop</p></div>
+      </div>
+      <div class="gallery-item">
+        <img src="2.png" alt="Projet 2" />
+        <div class="gallery-caption"><h3>Site DigiCompany</h3><p>Développement web — HTML/CSS/JS</p></div>
+      </div>
+      <div class="gallery-item">
+        <img src="3.png" alt="Projet 3" />
+        <div class="gallery-caption"><h3>Logo & Identité visuelle</h3><p>Branding — CorelDRAW</p></div>
+      </div>
+      <div class="gallery-item">
+        <img src="4.png" alt="Projet 4" />
+        <div class="gallery-caption"><h3>Bannières Social Media</h3><p>Design — Photoshop</p></div>
+      </div>
+      <div class="gallery-item">
+        <img src="5.png" alt="Projet 5" />
+        <div class="gallery-caption"><h3>App Budget Kreyòl</h3><p>Web app — JavaScript</p></div>
+      </div>
+      <div class="gallery-item">
+        <img src="6.png" alt="Projet 6" />
+        <div class="gallery-caption"><h3>WordPress E-commerce</h3><p>WordPress — WooCommerce</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE SERVICES -->
+  <div class="page" id="page-services">
+    <h1>Services</h1>
+    <p class="subtitle">Ce que je propose</p>
+    <div class="services-list">
+      <div class="service-card">
+        <h3>Design Graphique</h3>
+        <p>Affiches, flyers, bannières print et digital adaptés à votre marque.</p>
+      </div>
+      <div class="service-card">
+        <h3>Logo & Identité Visuelle</h3>
+        <p>Logotype, charte graphique et déclinaisons pour tous supports.</p>
+      </div>
+      <div class="service-card">
+        <h3>Développement Web</h3>
+        <p>Sites vitrine, portfolios, e-commerce. WordPress avancé et HTML/CSS/JS.</p>
+      </div>
+      <div class="service-card">
+        <h3>Social Media Design</h3>
+        <p>Visuels Facebook, TikTok, Instagram aux formats optimisés.</p>
+      </div>
+      <div class="service-card">
+        <h3>Production Audio</h3>
+        <p>Mixage, mastering, jingles et production musicale avec FL Studio.</p>
+      </div>
+      <div class="service-card">
+        <h3>Réparation Mobile</h3>
+        <p>Remplacement d'écrans LCD, vente et conseil en téléphonie.</p>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="showPage('contact')">Demander un devis</button>
+  </div>
+
+  <!-- PAGE CONTACT -->
+  <div class="page" id="page-contact">
+    <h1>Contact</h1>
+    <p class="subtitle">Disponible pour des projets en Haïti, USA et Chili</p>
+    <div class="contact-layout" style="margin-top:1.5rem;">
+
+      <div class="info-block">
+        <h2>Informations</h2>
+        <div class="info-row">
+          <label>Email</label>
+          <span>votre@email.com</span>
+        </div>
+        <div class="info-row">
+          <label>Localisation</label>
+          <span>Haïti (disponible à distance)</span>
+        </div>
+        <div class="info-row">
+          <label>Disponibilité</label>
+          <span>Lundi – Samedi, 8h – 20h</span>
+        </div>
+        <div class="info-row">
+          <label>Langues</label>
+          <span>Kreyòl, Français, English</span>
+        </div>
+      </div>
+
+      <div class="form-block">
+        <h2>Envoyer un message</h2>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Prénom</label>
+            <input type="text" id="fname" placeholder="Jean" />
+          </div>
+          <div class="form-group">
+            <label>Nom</label>
+            <input type="text" id="lname" placeholder="Dupont" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="email" placeholder="votre@email.com" />
+        </div>
+        <div class="form-group">
+          <label>Service</label>
+          <select id="service">
+            <option value="" disabled selected>Choisir un service...</option>
+            <option>Design Graphique</option>
+            <option>Logo & Identité Visuelle</option>
+            <option>Développement Web</option>
+            <option>Social Media Design</option>
+            <option>Production Audio</option>
+            <option>Réparation Mobile</option>
+            <option>Autre</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Message</label>
+          <textarea id="message" placeholder="Décrivez votre projet..."></textarea>
+        </div>
+        <button class="form-btn" onclick="submitForm()">Envoyer</button>
+        <div class="success-msg" id="successMsg">Message envoyé. Je vous répondrai dans les 24h.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function showPage(name) {
+      // pages
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-' + name).classList.add('active');
+      // nav buttons
+      document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
+      document.getElementById('nav-' + name).classList.add('active');
+      // scroll top
+      window.scrollTo(0, 0);
+    }
+
+    function submitForm() {
+      const fname   = document.getElementById('fname').value.trim();
+      const email   = document.getElementById('email').value.trim();
+      const message = document.getElementById('message').value.trim();
+      if (!fname || !email || !message) {
+        alert('Veuillez remplir prénom, email et message.');
+        return;
+      }
+      document.getElementById('successMsg').style.display = 'block';
+      ['fname','lname','email','service','message'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+    }
+
+    // Active state on load
+    showPage('accueil');
+  </script>
+
+</body>
+</html>
