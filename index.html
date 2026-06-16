@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vérification Activation Site Web</title>
+<style>
+  :root {
+    --bg: #F7F8FC;
+    --card: #FFFFFF;
+    --primary: #1A56DB;
+    --primary-dark: #1240A8;
+    --accent: #F59E0B;
+    --danger: #EF4444;
+    --success: #10B981;
+    --warning: #F59E0B;
+    --text: #1E293B;
+    --muted: #64748B;
+    --border: #E2E8F0;
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 20px 16px 60px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  header h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: -0.5px;
+  }
+
+  header p {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .step-nav {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .step-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .step-dot.active {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: white;
+  }
+
+  .step-dot.done {
+    border-color: var(--success);
+    background: var(--success);
+    color: white;
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+
+  .card h2 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card .subtitle {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .field {
+    margin-bottom: 14px;
+  }
+
+  .field label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .field input, .field select, .field textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.88rem;
+    color: var(--text);
+    background: #FAFBFC;
+    outline: none;
+    transition: border 0.2s;
+    font-family: inherit;
+  }
+
+  .field input:focus, .field select:focus, .field textarea:focus {
+    border-color: var(--primary);
+    background: white;
+  }
+
+  .field textarea { resize: vertical; min-height: 72px; }
+
+  .check-list { list-style: none; }
+
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .check-item:last-child { border-bottom: none; }
+
+  .check-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    accent-color: var(--primary);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .check-item .item-info { flex: 1; }
+
+  .check-item .item-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .check-item .item-desc {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 2px;
+    line-height: 1.4;
+  }
+
+  .check-item .item-action {
+    margin-top: 6px;
+  }
+
+  .check-item .item-action input {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.82rem;
+    background: #F8FAFC;
+    outline: none;
+    font-family: inherit;
+  }
+
+  .check-item .item-action input:focus {
+    border-color: var(--primary);
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .badge-ok { background: #D1FAE5; color: #065F46; }
+  .badge-warn { background: #FEF3C7; color: #92400E; }
+  .badge-danger { background: #FEE2E2; color: #991B1B; }
+  .badge-neutral { background: #F1F5F9; color: #475569; }
+
+  .progress-bar-wrap {
+    background: var(--border);
+    border-radius: 20px;
+    height: 8px;
+    margin: 12px 0 6px;
+  }
+
+  .progress-bar-fill {
+    height: 8px;
+    border-radius: 20px;
+    background: linear-gradient(90deg, var(--primary), #6366F1);
+    transition: width 0.4s ease;
+  }
+
+  .progress-label {
+    font-size: 0.78rem;
+    color: var(--muted);
+    text-align: right;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 11px 20px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    margin-top: 6px;
+  }
+
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+  }
+
+  .btn-primary:hover { background: var(--primary-dark); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+  }
+
+  .btn-success {
+    background: var(--success);
+    color: white;
+  }
+
+  .btn-accent {
+    background: var(--accent);
+    color: white;
+  }
+
+  .section-hidden { display: none; }
+
+  /* Proforma styles */
+  .proforma-preview {
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    font-size: 0.85rem;
+    line-height: 1.7;
+  }
+
+  .proforma-preview h3 {
+    font-size: 1.1rem;
+    color: var(--primary);
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+
+  .proforma-preview .pf-meta {
+    color: var(--muted);
+    font-size: 0.78rem;
+    margin-bottom: 16px;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 10px;
+  }
+
+  .proforma-preview table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 0.82rem;
+  }
+
+  .proforma-preview table th {
+    background: #EFF6FF;
+    color: var(--primary);
+    font-weight: 700;
+    padding: 8px 10px;
+    text-align: left;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+  }
+
+  .proforma-preview table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  .proforma-preview table tr:last-child td { border-bottom: none; }
+
+  .proforma-preview .pf-section {
+    margin: 14px 0;
+  }
+
+  .proforma-preview .pf-section h4 {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  .result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 0.83rem;
+  }
+
+  .result-item:last-child { border-bottom: none; }
+  .result-key { color: var(--muted); font-size: 0.78rem; }
+
+  .alert {
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 0.83rem;
+    margin-bottom: 12px;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    line-height: 1.4;
+  }
+
+  .alert-info { background: #EFF6FF; color: #1D4ED8; border-left: 3px solid #1D4ED8; }
+  .alert-warn { background: #FFFBEB; color: #92400E; border-left: 3px solid #F59E0B; }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--border);
+    padding: 4px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tab.active {
+    background: white;
+    color: var(--primary);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  .tool-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 0.84rem;
+    font-weight: 600;
+    background: #FAFBFC;
+    margin-bottom: 8px;
+    transition: all 0.2s;
+  }
+
+  .tool-link:hover { border-color: var(--primary); background: #EFF6FF; }
+  .tool-link .tl-icon { font-size: 1.1rem; }
+  .tool-link .tl-desc { font-size: 0.72rem; color: var(--muted); font-weight: 400; }
+
+  @media (min-width: 600px) {
+    body { max-width: 640px; margin: 0 auto; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌐 Activation Site Web</h1>
+  <p>Vérification complète avant livraison au client</p>
+</header>
+
+<div class="step-nav" id="stepNav">
+  <div class="step-dot active" onclick="goStep(1)" title="Info Client">1</div>
+  <div class="step-dot" onclick="goStep(2)" title="Domaine">2</div>
+  <div class="step-dot" onclick="goStep(3)" title="Site Web">3</div>
+  <div class="step-dot" onclick="goStep(4)" title="Contact">4</div>
+  <div class="step-dot" onclick="goStep(5)" title="Proforma">5</div>
+</div>
+
+<!-- STEP 1: INFO CLIENT -->
+<div id="step1">
+  <div class="card">
+    <h2>👤 Informations Client</h2>
+    <p class="subtitle">Antre enfòmasyon kliyan an pou ka jenere proforma a</p>
+
+    <div class="field">
+      <label>Nom complet / Entreprise</label>
+      <input type="text" id="clientName" placeholder="Ex: Jean Paul Design Studio">
+    </div>
+    <div class="field">
+      <label>Email client</label>
+      <input type="email" id="clientEmail" placeholder="client@email.com">
+    </div>
+    <div class="field">
+      <label>Téléphone / WhatsApp</label>
+      <input type="text" id="clientPhone" placeholder="+509 ...">
+    </div>
+    <div class="field">
+      <label>Nom de domaine souhaité</label>
+      <input type="text" id="domainName" placeholder="ex: monsite.com" oninput="updateDomainLinks()">
+    </div>
+    <div class="field">
+      <label>Type de site</label>
+      <select id="siteType">
+        <option value="">-- Choisir --</option>
+        <option>Site vitrine</option>
+        <option>Site e-commerce</option>
+        <option>Blog / Portfolio</option>
+        <option>Site d'entreprise</option>
+        <option>Application Web</option>
+        <option>Autre</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>URL du site (si déjà existant)</label>
+      <input type="text" id="siteUrl" placeholder="https://www.monsite.com">
+    </div>
+
+    <button class="btn btn-primary" onclick="goStep(2)">Continuer → Vérifier le Domaine</button>
+  </div>
+</div>
+
+<!-- STEP 2: DOMAINE -->
+<div id="step2" class="section-hidden">
+  <div class="card">
+    <h2>🔍 Vérification du Domaine</h2>
+    <p class="subtitle">Klike sou bouton yo pou verifye disponibilite domaine a</p>
+
+    <div class="alert alert-info">
+      💡 <span>Klike sou chak lyen an ba a — y ap ouvri nan yon nouvo onglet pou ou ka verifye</span>
+    </div>
+
+    <div id="domainLinksList">
+      <a class="tool-link" id="link-whois" href="#" target="_blank">
+        <span class="tl-icon">🌍</span>
+        <div>
+          <div>WHOIS Lookup — who.is</div>
+          <div class="tl-desc">Moun ki posede domaine a + dat ekspire</div>
+        </div>
+      </a>
+      <a class="tool-link" id="link-namecheap" href="#" target="_blank">
+        <span class="tl-icon">🛒</span>
+        <div>
+          <div>Namecheap — disponibilite + prix</div>
+          <div class="tl-desc">Verifye si domaine a disponib pou achte</div>
+        </div>
+      </a>
+      <a class="tool-link" id="link-godaddy" href="#" target="_blank">
+        <span class="tl-icon">🐣</span>
+        <div>
+          <div>GoDaddy — disponibilite</div>
+          <div class="tl-desc">2yèm verifye pou konfime rezilta a</div>
+        </div>
+      </a>
+      <a class="tool-link" id="link-wayback" href="#" target="_blank">
+        <span class="tl-icon">🕰️</span>
+        <div>
+          <div>Wayback Machine — Istwa domaine a</div>
+          <div class="tl-desc">Verifye si domaine a te gen yon lòt sit anvan</div>
+        </div>
+      </a>
+      <a class="tool-link" id="link-mxtoolbox" href="#" target="_blank">
+        <span class="tl-icon">📧</span>
+        <div>
+          <div>MXToolbox — DNS + Blacklist check</div>
+          <div class="tl-desc">Verifye si domaine a te bloke oswa nan spam list</div>
+        </div>
+      </a>
+    </div>
+
+    <div class="card" style="background:#F8FAFC; margin-top:16px;">
+      <h2 style="font-size:0.85rem;">📝 Rezilta Vérification Domaine</h2>
+      <ul class="check-list">
+        <li class="check-item">
+          <input type="checkbox" id="d1">
+          <div class="item-info">
+            <div class="item-title">Domaine disponib (pèsòn pa pran l)</div>
+            <div class="item-desc">WHOIS oswa Namecheap konfime disponibilite a</div>
+            <div class="item-action"><input type="text" id="d1_note" placeholder="Ex: Disponib sou Namecheap a $12.98/an"></div>
+          </div>
+        </li>
+        <li class="check-item">
+          <input type="checkbox" id="d2">
+          <div class="item-info">
+            <div class="item-title">Domaine pa gen move istwa (Wayback)</div>
+            <div class="item-desc">Sit la pa te itilize pou spam oswa kontni ilegal</div>
+            <div class="item-action"><input type="text" id="d2_note" placeholder="Ex: Premye enregistrement 2019, sit vitrine nòmal"></div>
+          </div>
+        </li>
+        <li class="check-item">
+          <input type="checkbox" id="d3">
+          <div class="item-info">
+            <div class="item-title">Domaine pa nan blacklist / spam list</div>
+            <div class="item-desc">MXToolbox montre domaine a pwòp</div>
+            <div class="item-action"><input type="text" id="d3_note" placeholder="Ex: Okenn blacklist detekte"></div>
+          </div>
+        </li>
+        <li class="check-item">
+          <input type="checkbox" id="d4">
+          <div class="item-info">
+            <div class="item-title">Dat ekspire a verifye (si domaine pa disponib)</div>
+            <div class="item-desc">Si kèk moun deja pran l, konnen ki lè l ap ekspire</div>
+            <div class="item-action"><input type="text" id="d4_note" placeholder="Ex: Ekspire le 15 Jan 2026 — pral disponib"></div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:8px;">
+      <button class="btn btn-outline" onclick="goStep(1)" style="width:40%">← Retour</button>
+      <button class="btn btn-primary" onclick="goStep(3)" style="width:60%">Continuer → Vérifier le Site</button>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 3: SITE WEB -->
+<div id="step3" class="section-hidden">
+  <div class="card">
+    <h2>🖥️ Vérification du Site Web</h2>
+    <p class="subtitle">Asire sit la kanpe avan livrezon</p>
+
+    <div id="siteLinksList">
+      <a class="tool-link" id="link-gtmetrix" href="#" target="_blank">
+        <span class="tl-icon">⚡</span>
+        <div>
+          <div>GTmetrix — Vitesse + Performance</div>
+          <div class="tl-desc">Vérifye vitès chajman sit la</div>
+        </div>
+      </a>
+      <a class="tool-link" id="link-uptime" href="#" target="_blank">
+        <span class="tl-icon">✅</span>
+        <div>
+          <div>UptimeRobot — Sit la anlè?</div>
+          <div class="tl-desc">Konfime sit la aktif e pa kraze</div>
+        </div>
+      </a>
+      <a class="tool-link" id="link-sslcheck" href="#" target="_blank">
+        <span class="tl-icon">🔒</span>
+        <div>
+          <div>SSL Shopper — Sertifika SSL</div>
+          <div class="tl-desc">HTTPS aktif + sertifika valid</div>
+        </div>
+      </a>
+      <a class="tool-link" id="link-mobile" href="#" target="_blank">
+        <span class="tl-icon">📱</span>
+        <div>
+          <div>Google Mobile Friendly Test</div>
+          <div class="tl-desc">Sit la travay byen sou telefòn</div>
+        </div>
+      </a>
+      <a class="tool-link" id="link-broken" href="#" target="_blank">
+        <span class="tl-icon">🔗</span>
+        <div>
+          <div>Dead Link Checker — Lyen kase</div>
+          <div class="tl-desc">Detecte lyen ki pa fonksyone sou sit la</div>
+        </div>
+      </a>
+      <a class="tool-link" id="link-screenshot" href="#" target="_blank">
+        <span class="tl-icon">📸</span>
+        <div>
+          <div>Screenshot Guru — Apèsi vizièl</div>
+          <div class="tl-desc">Wè kijan sit la parèt sou diferan aparèy</div>
+        </div>
+      </a>
+    </div>
+
+    <div class="card" style="background:#F8FAFC; margin-top:16px;">
+      <h2 style="font-size:0.85rem;">📝 Rezilta Vérification Sit Web</h2>
+      <ul class="check-list">
+        <li class="check-item">
+          <input type="checkbox" id="s1">
+          <div class="item-info">
+            <div class="item-title">Sit la anlè (en ligne) ✅</div>
+            <div class="item-desc">Li ouvri san erè 404/500</div>
+            <div class="item-action"><input type="text" id="s1_note" placeholder="Ex: Fonksyone nòmal, HTTP 200"></div>
+          </div>
+        </li>
+        <li class="check-item">
+          <input type="checkbox" id="s2">
+          <div class="item-info">
+            <div class="item-title">SSL / HTTPS aktif 🔒</div>
+            <div class="item-desc">Kadna ble parèt nan navigatè a</div>
+            <div class="item-action"><input type="text" id="s2_note" placeholder="Ex: SSL valid, ekspire 2026-03-10"></div>
+          </div>
+        </li>
+        <li class="check-item">
+          <input type="checkbox" id="s3">
+          <div class="item-info">
+            <div class="item-title">Sit la mobile-friendly 📱</div>
+            <div class="item-desc">Responsive sou telefòn ak tablèt</div>
+            <div class="item-action"><input type="text" id="s3_note" placeholder="Ex: Google Mobile Test: Passed"></div>
+          </div>
+        </li>
+        <li class="check-item">
+          <input type="checkbox" id="s4">
+          <div class="item-info">
+            <div class="item-title">Vitès akseptab (GTmetrix) ⚡</div>
+            <div class="item-desc">Chajman mwens pase 4 segonn</div>
+            <div class="item-action"><input type="text" id="s4_note" placeholder="Ex: Score B, chajman 2.8s"></div>
+          </div>
+        </li>
+        <li class="check-item">
+          <input type="checkbox" id="s5">
+          <div class="item-info">
+            <div class="item-title">Pa gen lyen kase 🔗</div>
+            <div class="item-desc">Tout lyen navigasyon yo fonksyone</div>
+            <div class="item-action"><input type="text" id="s5_note" placeholder="Ex: 0 broken links detekte"></div>
+          </div>
+        </li>
+        <li class="check-item">
+          <input type="checkbox" id="s6">
+          <div class="item-info">
+            <div class="item-title">Formulè kontak / CTA yo fonksyone</div>
+            <div class="item-desc">Tès soumisyon formulè reyisi</div>
+            <div class="item-action"><input type="text" id="s6_note" placeholder="Ex: Email resevwa nan boît kliyan"></div>
+          </div>
+        </li>
+        <li class="check-item">
+          <input type="checkbox" id="s7">
+          <div class="item-info">
+            <div class="item-title">Backup / Sauvegarde konfigire</div>
+            <div class="item-desc">Bakòp otomatik aktif sou hosting</div>
+            <div class="item-action"><input type="text" id="s7_note" placeholder="Ex: Bakòp chak 7 jou sou cPanel"></div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:8px;">
+      <button class="btn btn-outline" onclick="goStep(2)" style="width:40%">← Retour</button>
+      <button class="btn btn-primary" onclick="goStep(4)" style="width:60%">Continuer → Contact & Accès</button>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 4: CONTACT & ACCES -->
+<div id="step4" class="section-hidden">
+  <div class="card">
+    <h2>🔑 Accès & Informations de Livraison</h2>
+    <p class="subtitle">Tout aksè w ap remettre kliyan an</p>
+
+    <div class="alert alert-warn">
+      ⚠️ <span>Pa janm voye tout aksè yo nan yon sèl mesaj. Separe yo (ex: mo de passe pa SMS, lòt info pa email)</span>
+    </div>
+
+    <ul class="check-list">
+      <li class="check-item">
+        <input type="checkbox" id="a1">
+        <div class="item-info">
+          <div class="item-title">Aksè Admin WordPress / CMS</div>
+          <div class="item-action"><input type="text" id="a1_note" placeholder="URL Admin + Nom utilisateur (pa mo de passe isit)"></div>
+        </div>
+      </li>
+      <li class="check-item">
+        <input type="checkbox" id="a2">
+        <div class="item-info">
+          <div class="item-title">Aksè cPanel / Hébergement</div>
+          <div class="item-action"><input type="text" id="a2_note" placeholder="Ex: hosting.provider.com > login"></div>
+        </div>
+      </li>
+      <li class="check-item">
+        <input type="checkbox" id="a3">
+        <div class="item-info">
+          <div class="item-title">Aksè Registrar (Namecheap, GoDaddy...)</div>
+          <div class="item-action"><input type="text" id="a3_note" placeholder="Kote domaine a achte"></div>
+        </div>
+      </li>
+      <li class="check-item">
+        <input type="checkbox" id="a4">
+        <div class="item-info">
+          <div class="item-title">Aksè FTP / SFTP (si nesesè)</div>
+          <div class="item-action"><input type="text" id="a4_note" placeholder="Host FTP + non itilizatè"></div>
+        </div>
+      </li>
+      <li class="check-item">
+        <input type="checkbox" id="a5">
+        <div class="item-info">
+          <div class="item-title">Aksè email profesyonèl konfigire</div>
+          <div class="item-desc">Ex: info@monsite.com</div>
+          <div class="item-action"><input type="text" id="a5_note" placeholder="Adrès email + SMTP server info"></div>
+        </div>
+      </li>
+      <li class="check-item">
+        <input type="checkbox" id="a6">
+        <div class="item-info">
+          <div class="item-title">Google Analytics / Search Console</div>
+          <div class="item-desc">Si kliyan an vle swivi trafik sit la</div>
+          <div class="item-action"><input type="text" id="a6_note" placeholder="Email Google kliyan an konekte"></div>
+        </div>
+      </li>
+    </ul>
+
+    <div class="card" style="background:#F8FAFC; margin-top:16px;">
+      <h2 style="font-size:0.85rem;">💰 Détails du Paiement</h2>
+      <div class="field" style="margin-top:12px;">
+        <label>Montant total du projet (USD)</label>
+        <input type="number" id="totalAmount" placeholder="Ex: 450">
+      </div>
+      <div class="field">
+        <label>Acompte déjà reçu (USD)</label>
+        <input type="number" id="depositPaid" placeholder="Ex: 200" oninput="calcBalance()">
+      </div>
+      <div class="field">
+        <label>Solde restant (USD)</label>
+        <input type="text" id="balanceDue" placeholder="Calculé automatiquement" readonly style="background:#EFF6FF; font-weight:700; color:#1A56DB;">
+      </div>
+      <div class="field">
+        <label>Méthode de paiement acceptée</label>
+        <select id="paymentMethod">
+          <option>Wise / Transfert bancaire</option>
+          <option>MonCash</option>
+          <option>PayPal</option>
+          <option>Crypto (USDT)</option>
+          <option>Cash HTG</option>
+          <option>Autre</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Notes additionnelles</label>
+        <textarea id="projectNotes" placeholder="Ex: Maintenance mensuelle, formation incluse, garantie 30 jours..."></textarea>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:8px;">
+      <button class="btn btn-outline" onclick="goStep(3)" style="width:40%">← Retour</button>
+      <button class="btn btn-success" onclick="generateProforma()" style="width:60%">✅ Générer Proforma</button>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 5: PROFORMA -->
+<div id="step5" class="section-hidden">
+  <div class="card">
+    <h2>📄 Proforma — Suivi Livraison</h2>
+    <p class="subtitle">Dokiman pou remèt oswa voye ba kliyan an</p>
+
+    <div id="proformaContent" class="proforma-preview">
+      <!-- Generated dynamically -->
+    </div>
+
+    <div style="margin-top:16px; display:flex; flex-direction:column; gap:8px;">
+      <button class="btn btn-primary" onclick="copyProforma()">📋 Copier le texte</button>
+      <button class="btn btn-accent" onclick="printProforma()">🖨️ Imprimer / Sauvegarder PDF</button>
+      <button class="btn btn-outline" onclick="goStep(4)">← Modifier</button>
+    </div>
+  </div>
+
+  <!-- QUESTIONS A POSER AU CLIENT -->
+  <div class="card">
+    <h2>❓ Questions à poser au client</h2>
+    <p class="subtitle">Kesyon pou poze kliyan an pou konfime tout bagay</p>
+    <ul class="check-list" id="clientQuestions">
+      <li class="check-item"><span style="font-size:1rem">🎯</span><div class="item-info"><div class="item-title">Eske w satisfè ak design ak fonksyonnman sit la?</div><div class="item-desc">Konfime aval final la anvan livrezon ofisyèl</div></div></li>
+      <li class="check-item"><span style="font-size:1rem">📧</span><div class="item-info"><div class="item-title">Eske w te resevwa tès email ki soti nan formulè kontak la?</div><div class="item-desc">Konfime sistèm email la fonksyone</div></div></li>
+      <li class="check-item"><span style="font-size:1rem">📱</span><div class="item-info"><div class="item-title">Eske ou teste sit la sou telefòn ou?</div><div class="item-desc">Kliyan an dwe konfime l travay sou aparèy li</div></div></li>
+      <li class="check-item"><span style="font-size:1rem">🔑</span><div class="item-info"><div class="item-title">Eske w resevwa tout aksè yo epi ou ka konekte san pwoblèm?</div><div class="item-desc">Admin, hosting, email — tout bon?</div></div></li>
+      <li class="check-item"><span style="font-size:1rem">📅</span><div class="item-info"><div class="item-title">Eske domaine a ak hosting yo renouvle pou konbyen tan?</div><div class="item-desc">Asire kliyan an konnen ki lè l ap bezwen renouvle</div></div></li>
+      <li class="check-item"><span style="font-size:1rem">🛠️</span><div class="item-info"><div class="item-title">Eske w bezwen fòmasyon pou jere sit la ou menm?</div><div class="item-desc">Ofri opsyon fòmasyon WordPress pou kliyan endepandan</div></div></li>
+      <li class="check-item"><span style="font-size:1rem">💳</span><div class="item-info"><div class="item-title">Kilè w ap regle rès balans la?</div><div class="item-desc">Konfime dat ak metòd peman final la</div></div></li>
+    </ul>
+  </div>
+</div>
+
+<script>
+  let currentStep = 1;
+
+  function goStep(n) {
+    for (let i = 1; i <= 5; i++) {
+      document.getElementById('step' + i).classList.add('section-hidden');
+      const dot = document.querySelectorAll('.step-dot')[i-1];
+      dot.classList.remove('active', 'done');
+      if (i < n) dot.classList.add('done');
+    }
+    document.getElementById('step' + n).classList.remove('section-hidden');
+    document.querySelectorAll('.step-dot')[n-1].classList.add('active');
+    currentStep = n;
+    window.scrollTo(0, 0);
+  }
+
+  function updateDomainLinks() {
+    const raw = document.getElementById('domainName').value.trim().replace(/^https?:\/\//, '');
+    const domain = raw || 'example.com';
+    const site = document.getElementById('siteUrl').value.trim() || ('https://' + domain);
+
+    document.getElementById('link-whois').href = `https://who.is/whois/${domain}`;
+    document.getElementById('link-namecheap').href = `https://www.namecheap.com/domains/registration/results/?domain=${domain}`;
+    document.getElementById('link-godaddy').href = `https://www.godaddy.com/domainsearch/find?checkAvail=1&domainToCheck=${domain}`;
+    document.getElementById('link-wayback').href = `https://web.archive.org/web/*/${domain}`;
+    document.getElementById('link-mxtoolbox').href = `https://mxtoolbox.com/SuperTool.aspx?action=blacklist%3a${domain}`;
+    document.getElementById('link-gtmetrix').href = `https://gtmetrix.com/?url=${encodeURIComponent(site)}`;
+    document.getElementById('link-uptime').href = `https://uptimerobot.com/`;
+    document.getElementById('link-sslcheck').href = `https://www.sslshopper.com/ssl-checker.html#hostname=${domain}`;
+    document.getElementById('link-mobile').href = `https://search.google.com/test/mobile-friendly?url=${encodeURIComponent(site)}`;
+    document.getElementById('link-broken').href = `https://www.deadlinkchecker.com/website-dead-link-checker.asp?url=${encodeURIComponent(site)}`;
+    document.getElementById('link-screenshot').href = `https://screenshot.guru/screenshots/${encodeURIComponent(site)}`;
+  }
+
+  function calcBalance() {
+    const total = parseFloat(document.getElementById('totalAmount').value) || 0;
+    const deposit = parseFloat(document.getElementById('depositPaid').value) || 0;
+    const balance = total - deposit;
+    document.getElementById('balanceDue').value = balance >= 0 ? '$' + balance.toFixed(2) : 'Erreur';
+  }
+
+  document.getElementById('totalAmount').addEventListener('input', calcBalance);
+  document.getElementById('depositPaid').addEventListener('input', calcBalance);
+
+  function getVal(id) {
+    const el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  }
+
+  function getCheck(id) {
+    const el = document.getElementById(id);
+    return el ? (el.checked ? '✅' : '❌') : '—';
+  }
+
+  function getNote(id) {
+    const val = getVal(id);
+    return val ? `<span style="color:#475569;font-size:0.78rem">${val}</span>` : '<span style="color:#CBD5E1;font-size:0.75rem">—</span>';
+  }
+
+  function generateProforma() {
+    const name = getVal('clientName') || '[Client]';
+    const email = getVal('clientEmail') || '—';
+    const phone = getVal('clientPhone') || '—';
+    const domain = getVal('domainName') || '—';
+    const siteUrl = getVal('siteUrl') || '—';
+    const siteType = getVal('siteType') || '—';
+    const total = getVal('totalAmount') || '—';
+    const deposit = getVal('depositPaid') || '0';
+    const balance = getVal('balanceDue') || '—';
+    const payment = getVal('paymentMethod') || '—';
+    const notes = getVal('projectNotes') || '—';
+    const today = new Date().toLocaleDateString('fr-FR', {day:'2-digit', month:'long', year:'numeric'});
+
+    const html = `
+      <h3>📄 PROFORMA — LIVRAISON SITE WEB</h3>
+      <div class="pf-meta">
+        <strong>Date :</strong> ${today} &nbsp;|&nbsp;
+        <strong>Réf :</strong> WEB-${Date.now().toString().slice(-6)}
+      </div>
+
+      <div class="pf-section">
+        <h4>👤 Informations Client</h4>
+        <div class="result-item"><span class="result-key">Nom / Entreprise</span><strong>${name}</strong></div>
+        <div class="result-item"><span class="result-key">Email</span>${email}</div>
+        <div class="result-item"><span class="result-key">Téléphone</span>${phone}</div>
+      </div>
+
+      <div class="pf-section">
+        <h4>🌐 Projet Web</h4>
+        <div class="result-item"><span class="result-key">Domaine</span><strong>${domain}</strong></div>
+        <div class="result-item"><span class="result-key">URL du site</span>${siteUrl}</div>
+        <div class="result-item"><span class="result-key">Type de site</span>${siteType}</div>
+      </div>
+
+      <div class="pf-section">
+        <h4>🔍 Vérification Domaine</h4>
+        <div class="result-item"><span class="result-key">Disponibilité</span>${getCheck('d1')} ${getNote('d1_note')}</div>
+        <div class="result-item"><span class="result-key">Historique propre</span>${getCheck('d2')} ${getNote('d2_note')}</div>
+        <div class="result-item"><span class="result-key">Hors blacklist</span>${getCheck('d3')} ${getNote('d3_note')}</div>
+        <div class="result-item"><span class="result-key">Date d'expiration</span>${getCheck('d4')} ${getNote('d4_note')}</div>
+      </div>
+
+      <div class="pf-section">
+        <h4>🖥️ Vérification Site</h4>
+        <div class="result-item"><span class="result-key">Site en ligne</span>${getCheck('s1')} ${getNote('s1_note')}</div>
+        <div class="result-item"><span class="result-key">SSL / HTTPS</span>${getCheck('s2')} ${getNote('s2_note')}</div>
+        <div class="result-item"><span class="result-key">Mobile-friendly</span>${getCheck('s3')} ${getNote('s3_note')}</div>
+        <div class="result-item"><span class="result-key">Vitesse</span>${getCheck('s4')} ${getNote('s4_note')}</div>
+        <div class="result-item"><span class="result-key">Liens valides</span>${getCheck('s5')} ${getNote('s5_note')}</div>
+        <div class="result-item"><span class="result-key">Formulaires</span>${getCheck('s6')} ${getNote('s6_note')}</div>
+        <div class="result-item"><span class="result-key">Backup</span>${getCheck('s7')} ${getNote('s7_note')}</div>
+      </div>
+
+      <div class="pf-section">
+        <h4>🔑 Accès Livrés</h4>
+        <div class="result-item"><span class="result-key">Admin CMS</span>${getCheck('a1')} ${getNote('a1_note')}</div>
+        <div class="result-item"><span class="result-key">cPanel / Hosting</span>${getCheck('a2')} ${getNote('a2_note')}</div>
+        <div class="result-item"><span class="result-key">Registrar domaine</span>${getCheck('a3')} ${getNote('a3_note')}</div>
+        <div class="result-item"><span class="result-key">FTP</span>${getCheck('a4')} ${getNote('a4_note')}</div>
+        <div class="result-item"><span class="result-key">Email pro</span>${getCheck('a5')} ${getNote('a5_note')}</div>
+        <div class="result-item"><span class="result-key">Analytics</span>${getCheck('a6')} ${getNote('a6_note')}</div>
+      </div>
+
+      <div class="pf-section" style="background:#EFF6FF; padding:12px; border-radius:8px; margin-top:16px;">
+        <h4 style="color:#1A56DB;">💰 Récapitulatif Paiement</h4>
+        <div class="result-item"><span class="result-key">Montant total</span><strong>$${total}</strong></div>
+        <div class="result-item"><span class="result-key">Acompte reçu</span>$${deposit}</div>
+        <div class="result-item" style="font-size:0.95rem;"><span class="result-key"><strong>Solde dû</strong></span><strong style="color:#1A56DB;">${balance}</strong></div>
+        <div class="result-item"><span class="result-key">Paiement via</span>${payment}</div>
+      </div>
+
+      ${notes !== '—' ? `<div class="pf-section"><h4>📝 Notes</h4><p style="font-size:0.83rem;color:#475569;line-height:1.6">${notes}</p></div>` : ''}
+
+      <div style="margin-top:20px; padding-top:12px; border-top:2px solid #E2E8F0; font-size:0.75rem; color:#94A3B8; text-align:center;">
+        Document généré le ${today} · Marvel / Web Services
+      </div>
+    `;
+
+    document.getElementById('proformaContent').innerHTML = html;
+    goStep(5);
+  }
+
+  function copyProforma() {
+    const text = document.getElementById('proformaContent').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      alert('✅ Texte copié! Ou ka paste l nan WhatsApp, email oswa Word.');
+    });
+  }
+
+  function printProforma() {
+    window.print();
+  }
+
+  // Init links
+  updateDomainLinks();
+</script>
+
+<style>
+  @media print {
+    header, .step-nav, .tabs, .btn, .tool-link, .alert, ul.check-list .item-action { display: none !important; }
+    .proforma-preview { border: none; }
+    body { background: white; padding: 0; }
+  }
+</style>
+
+</body>
+</html>
